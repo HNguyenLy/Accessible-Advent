@@ -1419,11 +1419,24 @@ function openDoor(item, btnElement) {
             lastFocusedBtn = btnElement;
             currentQuizItem = item;
 
+            // Update state and label when a door is opened for the first time
             if (!STATE.openedDays.includes(item.day)) {
                 STATE.openedDays.push(item.day);
                 safeStorageSet('targetAdvent_openedDays', STATE.openedDays);
                 btnElement.classList.add('opened');
                 updateHistoryUI();
+
+                // Update accessible label to reflect opened state
+                const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentDay = today.getDate();
+                const isToday = (currentMonth === 11 && item.day === currentDay);
+                let stateLabel = 'Opened';
+                if (isToday) {
+                    stateLabel = `Today, ${stateLabel}`;
+                }
+                btnElement.setAttribute('aria-label', `Day ${item.day}, ${stateLabel}`);
+
                 const doorAudio = playSound('door');
                 if (doorAudio) {
                     doorAudio.addEventListener('ended', () => playSound('bells'), { once: true });
@@ -1440,7 +1453,7 @@ function openDoor(item, btnElement) {
             }
         }
 
-        function populateModal(item) {
+function populateModal(item) {
             const titleEl = document.getElementById('dialog-title');
             if (titleEl) titleEl.textContent = `Day ${item.day}: ${item.title}`;
 
