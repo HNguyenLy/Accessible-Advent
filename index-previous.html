@@ -483,7 +483,7 @@
             <section class="intro-text" aria-labelledby="intro-heading">
                 <h2 id="intro-heading" class="visually-hidden">Introduction</h2>
                 <p>
-                    Welcome, Team Members! Behind each door is a practical tip to help us create a more inclusive digital experience for our guests.
+                    Welcome, Target Team! Behind each door is a practical tip to help us create a more inclusive digital experience for our guests.
                 </p>
                 <p>
                     Use your <strong>Tab</strong> key to move to the calendar, then use <strong>Arrow keys</strong> to move between days. Press <strong>Enter</strong> or <strong>Space</strong> to open a door, and <strong>Escape</strong> to close the tip dialog.
@@ -1583,7 +1583,8 @@ function openDoor(item, btnElement) {
                         a.href = link.url;
                         a.target = '_blank';
                         a.rel = 'noopener noreferrer';
-                        a.textContent = link.title;
+                        a.textContent = `${link.title} (opens in a new tab)`;
+                        a.setAttribute('aria-label', `${link.title} (opens in a new tab)`);
                         li.appendChild(a);
                         list.appendChild(li);
                     });
