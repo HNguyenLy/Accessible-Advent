@@ -1549,7 +1549,22 @@ function openDoor(item, btnElement) {
                         <dd>Identify a component or template in your codebase that touches this tip. Check how it behaves with keyboard and screen readers, and capture at least one concrete improvement.</dd>
                     </dl>
                 `;
-                contentEl.appendChild(roleBlock);
+                
+                const roleGuidance = item.roleGuidance;
+                if (roleGuidance) {
+                    const headingEl = roleBlock.querySelector('h3');
+                    if (roleGuidance.heading && headingEl) headingEl.textContent = roleGuidance.heading;
+
+                    const dts = roleBlock.querySelectorAll('dt');
+                    const dds = roleBlock.querySelectorAll('dd');
+
+                    if (roleGuidance.uxLabel && dts[0]) dts[0].textContent = roleGuidance.uxLabel;
+                    if (roleGuidance.uxText && dds[0]) dds[0].textContent = roleGuidance.uxText;
+                    if (roleGuidance.engLabel && dts[1]) dts[1].textContent = roleGuidance.engLabel;
+                    if (roleGuidance.engText && dds[1]) dds[1].textContent = roleGuidance.engText;
+                }
+
+contentEl.appendChild(roleBlock);
 
                 // Apply it this week
                 const applyBlock = document.createElement('section');
