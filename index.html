@@ -400,6 +400,56 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        .role-lenses {
+            margin-top: 1.25rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #ddd;
+            font-size: 0.95rem;
+        }
+
+        .role-lenses h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .role-lenses dl {
+            margin: 0;
+        }
+
+        .role-lenses dt {
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .role-lenses dd {
+            margin: 0.25rem 0 0.5rem 0;
+        }
+
+        .apply-this {
+            margin-top: 1.25rem;
+            padding: 0.75rem 0;
+            border-top: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+
+        .apply-this h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .advanced-learning {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .advanced-learning summary {
+            font-weight: 600;
+        }
+
+        .advanced-learning details {
+            margin-top: 0.25rem;
+        }
+
 
         @media (prefers-reduced-motion: reduce) {
             .door-btn, .skip-link, dialog {
@@ -433,9 +483,13 @@
             <section class="intro-text" aria-labelledby="intro-heading">
                 <h2 id="intro-heading" class="visually-hidden">Introduction</h2>
                 <p>
-                    Welcome, Team Members! Behind each door is a practical tip to help us create a more inclusive digital experience for our guests. 
-                    Use your <strong>Tab</strong> and <strong>Arrow keys</strong> to navigate. 
-                    Ensure your sound is on for the full festive experience (controls below).
+                    Welcome, Team Members! Behind each door is a practical tip to help us create a more inclusive digital experience for our guests.
+                </p>
+                <p>
+                    Use your <strong>Tab</strong> key to move to the calendar, then use <strong>Arrow keys</strong> to move between days. Press <strong>Enter</strong> or <strong>Space</strong> to open a door, and <strong>Escape</strong> to close the tip dialog.
+                </p>
+                <p>
+                    Each door should take about 2 to 3 minutes. Sound effects are optional and just for fun. All important information is always available in text and does not rely on audio.
                 </p>
             </section>
 
@@ -474,6 +528,9 @@
             <section aria-labelledby="history-heading" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc;">
                 <h2 id="history-heading">Progress & History</h2>
                 <p>You have unlocked <span id="progress-count">0</span> of 31 tips.</p>
+                <p id="streak-text" class="history-meta" aria-live="polite"></p>
+                <p class="history-meta">Consider opening one door together in standup or refinement and discussing how it applies to your current work.</p>
+                <div id="category-summary" class="history-meta"></div>
                 <div id="history-list"></div>
             </section>
         </main>
@@ -1307,7 +1364,7 @@
         if (isLocked) {
             stateLabel = 'Locked';
         } else if (isOpened) {
-            stateLabel = 'Opened';
+            stateLabel = 'Previously opened';
         } else {
             stateLabel = 'Not opened';
         }
@@ -1425,6 +1482,18 @@ function openDoor(item, btnElement) {
                 safeStorageSet('targetAdvent_openedDays', STATE.openedDays);
                 btnElement.classList.add('opened');
                 updateHistoryUI();
+
+                // Update accessible label to reflect previously opened state
+                const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentDay = today.getDate();
+                let stateLabel = 'Previously opened';
+                const isToday = (currentMonth === 11 && item.day === currentDay);
+                if (isToday) {
+                    stateLabel = `Today, ${stateLabel}`;
+                }
+                btnElement.setAttribute('aria-label', `Day ${item.day}, ${stateLabel}`);
+
                 const doorAudio = playSound('door');
                 if (doorAudio) {
                     doorAudio.addEventListener('ended', () => playSound('bells'), { once: true });
@@ -1452,7 +1521,45 @@ function openDoor(item, btnElement) {
             if (ctxEl) ctxEl.textContent = `Context: ${item.context}`;
 
             const contentEl = document.getElementById('tip-content');
-            if (contentEl) contentEl.innerHTML = `<p>${item.content}</p>`;
+            if (contentEl) {
+                contentEl.innerHTML = `<p>${item.content}</p>`;
+
+                // Role based lenses for UX and engineering partners
+                const roleBlock = document.createElement('section');
+                roleBlock.className = 'role-lenses';
+                roleBlock.setAttribute('aria-label', 'Role perspectives');
+                roleBlock.innerHTML = `
+                    <h3>How to look at this</h3>
+                    <dl>
+                        <dt>For UX and content designers</dt>
+                        <dd>Consider how this tip shows up in flows, patterns, and copy for your current work. Look for one place in your designs where this applies and note how you would update the pattern.</dd>
+                        <dt>For engineers and QA</dt>
+                        <dd>Identify a component or template in your codebase that touches this tip. Check how it behaves with keyboard and screen readers, and capture at least one concrete improvement.</dd>
+                    </dl>
+                `;
+                contentEl.appendChild(roleBlock);
+
+                // Apply it this week
+                const applyBlock = document.createElement('section');
+                applyBlock.className = 'apply-this';
+                applyBlock.setAttribute('aria-label', 'Apply this tip');
+                applyBlock.innerHTML = `
+                    <h3>Apply this in your work</h3>
+                    <p>Pick one surface related to this context (${item.context}) and check it against this tip. Capture a follow up task or acceptance criteria in your backlog if you find a gap.</p>
+                `;
+                contentEl.appendChild(applyBlock);
+
+                // Optional deeper learning for advanced partners
+                const advancedBlock = document.createElement('section');
+                advancedBlock.className = 'advanced-learning';
+                advancedBlock.innerHTML = `
+                    <details>
+                        <summary>Go deeper</summary>
+                        <p>Pair with a partner in a different role. Walk through a real Target flow that uses this pattern and talk through how it meets the Target Accessibility Standards. If you have time, try the flow using only a keyboard and a screen reader.</p>
+                    </details>
+                `;
+                contentEl.appendChild(advancedBlock);
+            }
 
             if (feedbackEl) {
                 feedbackEl.textContent = '';
@@ -1539,6 +1646,47 @@ function openDoor(item, btnElement) {
 
         function updateHistoryUI() {
             if (progressCountEl) progressCountEl.textContent = STATE.openedDays.length;
+
+            const streakTextEl = document.getElementById('streak-text');
+            const categorySummaryEl = document.getElementById('category-summary');
+
+            const openedSorted = [...STATE.openedDays].sort((a, b) => a - b);
+
+            // Simple streak: longest consecutive run starting from Day 1
+            let streak = 0;
+            for (let i = 0; i < openedSorted.length; i++) {
+                if (openedSorted[i] === i + 1) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            if (streakTextEl) {
+                if (streak > 0) {
+                    streakTextEl.textContent = `You have opened the first ${streak} day${streak === 1 ? '' : 's'} in order.`;
+                } else {
+                    streakTextEl.textContent = '';
+                }
+            }
+
+            // Category level summary to emphasize themes for UX and engineering
+            if (categorySummaryEl) {
+                if (openedSorted.length === 0) {
+                    categorySummaryEl.textContent = '';
+                } else {
+                    const counts = {};
+                    openedSorted.forEach(dayNum => {
+                        const item = adventData.find(d => d.day === dayNum);
+                        if (item && item.category) {
+                            const key = item.category;
+                            counts[key] = (counts[key] || 0) + 1;
+                        }
+                    });
+                    const parts = Object.keys(counts).map(key => `${counts[key]} ${key} tip${counts[key] === 1 ? '' : 's'}`);
+                    categorySummaryEl.textContent = parts.length ? `So far you have explored ${parts.join(', ')}.` : '';
+                }
+            }
+
             if (historyListEl) {
                 historyListEl.innerHTML = '';
                 if (STATE.openedDays.length === 0) {
@@ -1546,9 +1694,9 @@ function openDoor(item, btnElement) {
                     return;
                 }
                 const list = document.createElement('ul');
-                [...STATE.openedDays].sort((a,b) => a - b).forEach(dayNum => {
+                openedSorted.forEach(dayNum => {
                     const item = adventData.find(d => d.day === dayNum);
-                    if(item) {
+                    if (item) {
                         const li = document.createElement('li');
                         li.innerHTML = `<strong>Day ${dayNum}:</strong> ${item.title} - <button class="link-btn" onclick="reopenDay(${dayNum})">Review Day ${dayNum}</button>`;
                         list.appendChild(li);
