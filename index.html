@@ -311,32 +311,6 @@
             border-radius: var(--radius-md);
         }
 
-        .tas-links {
-            margin-top: 1rem;
-            border-top: 1px solid #ddd;
-            padding-top: 0.75rem;
-            font-size: 0.9rem;
-        }
-
-        .tas-links h4 {
-            margin: 0 0 0.5rem 0;
-            font-size: 0.95rem;
-        }
-
-        .tas-links ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .tas-links li + li {
-            margin-top: 0.25rem;
-        }
-
-        .tas-links a {
-            text-decoration: underline;
-        }
-
         .quiz-options {
             display: flex;
             flex-direction: column;
@@ -504,10 +478,6 @@
                 </form>
                 <div id="quiz-feedback" class="feedback-region" aria-live="polite"></div>
             </div>
-
-            <div class="tas-links" id="tas-links" aria-label="Relevant Target Accessibility Standards">
-                <!-- TAS links injected here -->
-            </div>
         </div>
     </dialog>
 
@@ -534,7 +504,7 @@
                 title: "Alt Text is Essential",
                 category: "Content",
                 context: "Product images on PDP (Product Detail Page).",
-                content: "Alt text describes the image for guests who can't see it. Be concise. If an image is purely decorative, use alt='' (empty string).",
+                content: "Alt text describes the image for users who can't see it. Be concise. If an image is purely decorative, use alt='' (empty string).",
                 quiz: {
                     question: "What is the best alt text for a red t-shirt product image?",
                     options: ["Image of shirt", "Red cotton t-shirt with crew neck", "red-shirt.jpg"],
@@ -560,7 +530,7 @@
                 title: "Visible Focus Indicators",
                 category: "Design/Eng",
                 context: "Navigation Menu on Desktop.",
-                content: "Never set outline: none without providing a clear alternative style. Keyboard guests rely on the focus ring to know where they are.",
+                content: "Never set outline: none without providing a clear alternative style. Keyboard users rely on the focus ring to know where they are.",
                 quiz: {
                     question: "What happens if you use tabindex='1'?",
                     options: ["It improves accessibility", "It disrupts the natural flow"],
@@ -599,7 +569,7 @@
                 title: "Touch Target Size",
                 category: "Mobile",
                 context: "Mobile App 'Add to Cart' button.",
-                content: "Interactive targets should be at least 44x44 CSS pixels to be easily tappable, preventing frustration for guests with motor impairments.",
+                content: "Interactive targets should be at least 44x44 CSS pixels to be easily tappable, preventing frustration for users with motor impairments.",
                 quiz: {
                     question: "What is the minimum recommended touch target size?",
                     options: ["24x24px", "44x44px", "10x10px"],
@@ -612,7 +582,7 @@
                 title: "Don't Use Color Alone",
                 category: "Design",
                 context: "Product availability status (In Stock / Out of Stock).",
-                content: "Don't rely solely on green or red text. Use text labels or icons (e.g., a checkmark or an X) so colorblind guests can understand the status.",
+                content: "Don't rely solely on green or red text. Use text labels or icons (e.g., a checkmark or an X) so colorblind users can understand the status.",
                 quiz: {
                     question: "How should we indicate an error in a form field?",
                     options: ["Red border only", "Red border and an error message/icon", "Grey border"],
@@ -625,12 +595,12 @@
                 title: "Link Text Meaning",
                 category: "Content",
                 context: "Category landing pages.",
-                content: "Avoid 'Click Here'. Link text should describe the destination. Screen reader guests often pull up a list of links out of context.",
+                content: "Avoid 'Click Here'. Link text should describe the destination. Screen reader users often pull up a list of links out of context.",
                 quiz: {
                     question: "Which is better link text?",
                     options: ["Click here", "Shop Women's Sweaters", "Read more"],
                     correct: 1,
-                    explanation: "Correct! It tells the guest exactly where they are going."
+                    explanation: "Correct! It tells the user exactly where they are going."
                 }
             },
             {
@@ -638,7 +608,7 @@
                 title: "Captions for Video",
                 category: "Multimedia",
                 context: "Product demo videos.",
-                content: "Videos with audio must have captions (CC). This helps deaf guests and anyone browsing with sound off.",
+                content: "Videos with audio must have captions (CC). This helps deaf users and anyone browsing with sound off.",
                 quiz: {
                     question: "Are auto-generated captions sufficient?",
                     options: ["Yes, they are perfect", "No, they must be reviewed for accuracy"],
@@ -651,7 +621,7 @@
                 title: "Reduced Motion",
                 category: "Engineering",
                 context: "Homepage Hero Carousel.",
-                content: "Respect the `prefers-reduced-motion` media query. If a guest requests it, stop auto-playing carousels and avoid large sweeping animations.",
+                content: "Respect the `prefers-reduced-motion` media query. If a user requests it, stop auto-playing carousels and avoid large sweeping animations.",
                 quiz: {
                     question: "What CSS query detects motion preference?",
                     options: ["@media (motion: low)", "@media (prefers-reduced-motion: reduce)"],
@@ -664,12 +634,12 @@
                 title: "Skip to Content",
                 category: "Engineering",
                 context: "Global Site Header.",
-                content: "A 'Skip to Main Content' link allows keyboard guests to bypass the massive global navigation and get straight to the page content.",
+                content: "A 'Skip to Main Content' link allows keyboard users to bypass the massive global navigation and get straight to the page content.",
                 quiz: {
                     question: "Where should the Skip Link be?",
                     options: ["At the bottom of the footer", "The very first focusable element", "Inside the menu"],
                     correct: 1,
-                    explanation: "Correct! It must be first so guests catch it immediately."
+                    explanation: "Correct! It must be first so users catch it immediately."
                 }
             },
             {
@@ -690,9 +660,9 @@
                 title: "Error Identification",
                 category: "Forms",
                 context: "Credit Card Entry.",
-                content: "When an error occurs, shift focus to the error or announce it using `aria-live`. Don't let the guest guess why the form didn't submit.",
+                content: "When an error occurs, shift focus to the error or announce it using `aria-live`. Don't let the user guess why the form didn't submit.",
                 quiz: {
-                    question: "How should we help guests fix errors?",
+                    question: "How should we help users fix errors?",
                     options: ["Highlight the field red", "Provide text description of the error"],
                     correct: 1,
                     explanation: "Correct! Explain *how* to fix it (e.g., 'Card number must be 16 digits')."
@@ -703,7 +673,7 @@
                 title: "Keyboard Trap Prevention",
                 category: "Engineering",
                 context: "Modals and Popups.",
-                content: "A keyboard guest must never get 'stuck' in an element. If they tab into a component, they must be able to tab (or Escape) out.",
+                content: "A keyboard user must never get 'stuck' in an element. If they tab into a component, they must be able to tab (or Escape) out.",
                 quiz: {
                     question: "Is it okay to disable the Escape key in a modal?",
                     options: ["Yes", "No, Escape should close the modal"],
@@ -716,12 +686,12 @@
                 title: "Zoom to 200%",
                 category: "Design",
                 context: "Entire Site Layout.",
-                content: "Guests with low vision zoom in. Ensure the layout doesn't break and text doesn't overlap when zoomed to 200%.",
+                content: "Users with low vision zoom in. Ensure the layout doesn't break and text doesn't overlap when zoomed to 200%.",
                 quiz: {
                     question: "Should we disable viewport zooming on mobile?",
-                    options: ["Yes, for design control", "No, never disable guest scaling"],
+                    options: ["Yes, for design control", "No, never disable user scaling"],
                     correct: 1,
-                    explanation: "Correct! <meta guest-scalable='no'> is an anti-pattern."
+                    explanation: "Correct! <meta user-scalable='no'> is an anti-pattern."
                 }
             },
             {
@@ -742,12 +712,12 @@
                 title: "Device Orientation",
                 category: "Mobile",
                 context: "Target App.",
-                content: "Apps should work in both Portrait and Landscape modes. Some guests mount their devices to wheelchairs in a fixed position.",
+                content: "Apps should work in both Portrait and Landscape modes. Some users mount their devices to wheelchairs in a fixed position.",
                 quiz: {
                     question: "Can we lock the app to Portrait mode?",
                     options: ["Yes", "No, unless essential (like a piano app)"],
                     correct: 1,
-                    explanation: "Correct! Respect the guest's physical setup."
+                    explanation: "Correct! Respect the user's physical setup."
                 }
             },
             {
@@ -755,7 +725,7 @@
                 title: "Timeouts",
                 category: "Process",
                 context: "Checkout Timer.",
-                content: "If a session is about to expire, warn the guest and give them a way to extend the time. Some guests type or read slowly.",
+                content: "If a session is about to expire, warn the user and give them a way to extend the time. Some users type or read slowly.",
                 quiz: {
                     question: "How much time is enough?",
                     options: ["2 minutes", "It varies, allow extension"],
@@ -773,7 +743,7 @@
                     question: "Should the search bar move around on different pages?",
                     options: ["Yes, for variety", "No, keep it consistent"],
                     correct: 1,
-                    explanation: "Correct! Don't make the guest relearn your UI on every page."
+                    explanation: "Correct! Don't make the user relearn your UI on every page."
                 }
             },
             {
@@ -807,7 +777,7 @@
                 title: "Flashing Content",
                 category: "Design",
                 context: "Holiday Animations.",
-                content: "Content must not flash more than 3 times per second. Fast flashing can trigger seizures in guests with photosensitive epilepsy.",
+                content: "Content must not flash more than 3 times per second. Fast flashing can trigger seizures in users with photosensitive epilepsy.",
                 quiz: {
                     question: "Is a rapid strobe light effect okay?",
                     options: ["Yes, it's exciting", "No, it's dangerous"],
@@ -823,7 +793,7 @@
                 content: "Don't rely on sensory characteristics alone. Don't say 'Click the green button'. Say 'Click the Submit button'.",
                 quiz: {
                     question: "Is 'See the column on the right' accessible?",
-                    options: ["Yes", "No, blind guests don't see columns"],
+                    options: ["Yes", "No, blind users don't see columns"],
                     correct: 1,
                     explanation: "Correct! Screen readers linearize content."
                 }
@@ -846,7 +816,7 @@
                 title: "Target Size in Lists",
                 category: "Design",
                 context: "Filter Lists.",
-                content: "In a list of links or checkboxes, ensure there is space between them so guests don't accidentally click the wrong one.",
+                content: "In a list of links or checkboxes, ensure there is space between them so users don't accidentally click the wrong one.",
                 quiz: {
                     question: "How much space is good practice?",
                     options: ["None", "At least 8px or enough for 44px target"],
@@ -859,7 +829,7 @@
                 title: "Transcripts for Audio",
                 category: "Multimedia",
                 context: "Podcast episodes.",
-                content: "Provide a text transcript for audio-only content. This helps deaf guests and those who prefer reading.",
+                content: "Provide a text transcript for audio-only content. This helps deaf users and those who prefer reading.",
                 quiz: {
                     question: "Is a transcript the same as captions?",
                     options: ["Yes", "No, transcripts are a separate text document"],
@@ -885,7 +855,7 @@
                 title: "Plain Language",
                 category: "Content",
                 context: "Return Policy.",
-                content: "Write clearly and simply. Avoid complex jargon. This helps guests with cognitive disabilities and non-native speakers.",
+                content: "Write clearly and simply. Avoid complex jargon. This helps users with cognitive disabilities and non-native speakers.",
                 quiz: {
                     question: "What reading level should we aim for?",
                     options: ["PhD level", "Lower secondary education (approx 8th grade)"],
@@ -903,100 +873,7 @@
                     question: "Can we rely 100% on automated tools?",
                     options: ["Yes", "No"],
                     correct: 1,
-                    explanation: "Correct! Human ju
-
-        const tasIndex = {
-    1: [
-        { title: "Accessibility at Target", url: "https://designsystems.prod.target.com/foundations/accessibility/accessibility-at-target" },
-        { title: "Accessibility standards overview", url: "https://designsystems.prod.target.com/foundations/accessibility/accessibility-standards-overview" }
-    ],
-    2: [
-        { title: "Images Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/images" },
-        { title: "Media Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/media" }
-    ],
-    3: [
-        { title: "Color And Text Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/color-and-text" },
-        { title: "Accessibility: Practices", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/links" }
-    ],
-    4: [
-        { title: "Focus Path Focus Indicators Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/focus-path-focus-indicators" },
-        { title: "Navigation Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/navigation" }
-    ],
-    5: [
-        { title: "Headings Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/headings" }
-    ],
-    6: [
-        { title: "Forms Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/forms" },
-        { title: "Error Messaging Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/error-messaging" }
-    ],
-    7: [
-        { title: "Target Size Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/target-size" }
-    ],
-    8: [
-        { title: "Color And Text Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/color-and-text" },
-        { title: "Error Messaging Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/error-messaging" }
-    ],
-    9: [
-        { title: "Links Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/links" },
-        { title: "Navigation Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/navigation" }
-    ],
-    10: [
-        { title: "Media Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/media" }
-    ],
-    11: [
-        { title: "Media Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/media" }
-    ],
-    12: [
-        { title: "Navigation Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/navigation" },
-        { title: "Landmarks Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/landmarks" }
-    ],
-    13: [
-        { title: "Links Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/links" }
-    ],
-    14: [
-        { title: "Error Messaging Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/error-messaging" },
-        { title: "Forms Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/forms" }
-    ],
-    15: [
-        { title: "Focus Path Focus Indicators Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/focus-path-focus-indicators" }
-    ],
-    17: [
-        { title: "Focus Path Focus Indicators Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/focus-path-focus-indicators" },
-        { title: "Navigation Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/navigation" }
-    ],
-    19: [
-        { title: "Time Limits Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/time-limits" },
-        { title: "Authentication Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/authentication" }
-    ],
-    20: [
-        { title: "Navigation Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/navigation" },
-        { title: "Links Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/links" }
-    ],
-    21: [
-        { title: "Accessibility: Practices", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/links" }
-    ],
-    22: [
-        { title: "Forms Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/forms" }
-    ],
-    23: [
-        { title: "Media Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/media" }
-    ],
-    24: [
-        { title: "Error Messaging Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-patterns/error-messaging" }
-    ],
-    26: [
-        { title: "Target Size Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/target-size" }
-    ],
-    27: [
-        { title: "Media Accessibility Standard", url: "https://designsystems.prod.target.com/foundations/accessibility-practices/media" }
-    ],
-    31: [
-        { title: "Accessibility at Target", url: "https://designsystems.prod.target.com/foundations/accessibility/accessibility-at-target" },
-        { title: "Accessibility standards overview", url: "https://designsystems.prod.target.com/foundations/accessibility/accessibility-standards-overview" }
-    ]
-};
-
-dgment is required."
+                    explanation: "Correct! Human judgment is required."
                 }
             },
             {
@@ -1009,7 +886,7 @@ dgment is required."
                     question: "When is accessibility 'done'?",
                     options: ["When we launch", "Never, it's an ongoing practice"],
                     correct: 1,
-                    explanation: "Correct! Technologies and guest needs evolve."
+                    explanation: "Correct! Technologies and user needs evolve."
                 }
             }
         ];
