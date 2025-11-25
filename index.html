@@ -118,6 +118,11 @@
             align-items: center;
             gap: 10px;
         }
+        
+        .ios-volume-note {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
 
         button.icon-btn {
             background: none;
@@ -419,6 +424,7 @@
                     </button>
                     <label for="volume-slider">Volume</label>
                     <input type="range" id="volume-slider" min="0" max="100" step="5" value="50">
+                    <span id="ios-volume-helper" class="ios-volume-note" hidden>On iPhone and iPad, use the device volume buttons to change the sound level.</span>
                 </div>
                 <div class="control-group">
                     <button id="btn-toggle-contrast" class="icon-btn" aria-pressed="false" aria-label="High Contrast Mode: Off">
@@ -932,6 +938,15 @@
         
         let bgAudio = null; // Store background audio instance
 
+        function isIOSDevice() {
+            const ua = window.navigator.userAgent || '';
+            const platform = window.navigator.platform || '';
+            const iOSPattern = /iPhone|iPad|iPod/i.test(ua);
+            const iPadOnMac = platform === 'MacIntel' && window.navigator.maxTouchPoints > 1;
+            return iOSPattern || iPadOnMac;
+        }
+
+
         function playSound(type) {
             if (!STATE.soundEnabled) return;
             const src = AUDIO_LIBRARY[type];
@@ -989,7 +1004,7 @@
            ========================================= */
         // These will be populated after DOMContentLoaded
         let gridEl, dialogEl, btnCloseModal, btnToggleSound, btnToggleMusic, btnToggleContrast;
-        let volumeSlider, quizForm, feedbackEl, progressCountEl, historyListEl, dateStatusEl;
+        let volumeSlider, iosVolumeHelperEl, quizForm, feedbackEl, progressCountEl, historyListEl, dateStatusEl;
 
         let lastFocusedBtn = null;
         let currentQuizItem = null;
@@ -1004,6 +1019,7 @@
                 btnToggleMusic = document.getElementById('btn-toggle-music');
                 btnToggleContrast = document.getElementById('btn-toggle-contrast');
                 volumeSlider = document.getElementById('volume-slider');
+                iosVolumeHelperEl = document.getElementById('ios-volume-helper');
                 quizForm = document.getElementById('quiz-form');
                 feedbackEl = document.getElementById('quiz-feedback');
                 progressCountEl = document.getElementById('progress-count');
@@ -1046,11 +1062,24 @@
                     });
                 }
                 
+                const ios = isIOSDevice();
+                
                 if (volumeSlider) {
-                    volumeSlider.addEventListener('input', (e) => {
-                        STATE.volume = parseInt(e.target.value, 10) / 100;
-                        if(bgAudio) bgAudio.volume = STATE.volume;
-                    });
+                    const volumeLabel = document.querySelector('label[for="volume-slider"]');
+                    
+                    if (ios) {
+                        volumeSlider.hidden = true;
+                        if (volumeLabel) volumeLabel.hidden = true;
+                        if (iosVolumeHelperEl) iosVolumeHelperEl.hidden = false;
+                    } else {
+                        volumeSlider.addEventListener('input', (e) => {
+                            const value = parseInt(e.target.value, 10);
+                            if (Number.isNaN(value)) return;
+                            STATE.volume = value / 100;
+                            if (bgAudio) bgAudio.volume = STATE.volume;
+                        });
+                        if (iosVolumeHelperEl) iosVolumeHelperEl.hidden = true;
+                    }
                 }
 
                 if (btnCloseModal) btnCloseModal.addEventListener('click', () => dialogEl.close());
