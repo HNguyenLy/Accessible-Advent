@@ -59,6 +59,18 @@
             text-decoration: none;
             font-weight: bold;
         }
+        .visually-hidden {
+            border: 0;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            width: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+        }
+
         .skip-link:focus {
             top: 0;
             outline: 4px solid var(--focus-blue);
@@ -483,7 +495,7 @@
             <section class="intro-text" aria-labelledby="intro-heading">
                 <h2 id="intro-heading" class="visually-hidden">Introduction</h2>
                 <p>
-                    Welcome, Team Members! Behind each door is a practical tip to help us create a more inclusive digital experience for our guests.
+                    Welcome, Target Team! Behind each door is a practical accessibility tip to help us create a more inclusive digital experience for our guests and team members.
                 </p>
                 <p>
                     Use your <strong>Tab</strong> key to move to the calendar, then use <strong>Arrow keys</strong> to move between days. Press <strong>Enter</strong> or <strong>Space</strong> to open a door, and <strong>Escape</strong> to close the tip dialog.
@@ -1584,6 +1596,10 @@ function openDoor(item, btnElement) {
                         a.target = '_blank';
                         a.rel = 'noopener noreferrer';
                         a.textContent = link.title;
+                        const vh = document.createElement('span');
+                        vh.className = 'visually-hidden';
+                        vh.textContent = ' (opens in a new tab)';
+                        a.appendChild(vh);
                         li.appendChild(a);
                         list.appendChild(li);
                     });

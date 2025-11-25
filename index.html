@@ -1588,6 +1588,10 @@ function openDoor(item, btnElement) {
                     heading.textContent = 'Relevant Target Accessibility Standards';
                     tasContainer.appendChild(heading);
 
+                    const desc = document.createElement('p');
+                    desc.textContent = 'These standards explain how this tip maps to Target wide accessibility requirements.';
+                    tasContainer.appendChild(desc);
+
                     const list = document.createElement('ul');
                     linksForDay.slice(0, 2).forEach(link => {
                         const li = document.createElement('li');
