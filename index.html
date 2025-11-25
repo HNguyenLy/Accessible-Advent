@@ -59,6 +59,18 @@
             text-decoration: none;
             font-weight: bold;
         }
+        .visually-hidden {
+            border: 0;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            width: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+        }
+
         .skip-link:focus {
             top: 0;
             outline: 4px solid var(--focus-blue);
@@ -1584,6 +1596,10 @@ function openDoor(item, btnElement) {
                         a.target = '_blank';
                         a.rel = 'noopener noreferrer';
                         a.textContent = link.title;
+                        const vh = document.createElement('span');
+                        vh.className = 'visually-hidden';
+                        vh.textContent = ' (opens in a new tab)';
+                        a.appendChild(vh);
                         li.appendChild(a);
                         list.appendChild(li);
                     });
