@@ -508,18 +508,6 @@
             <!-- Global Controls -->
             <nav aria-label="Global Settings" class="controls-bar">
                 <div class="control-group">
-                    <label for="role-select">Choose your role</label>
-                    <select id="role-select" name="role-select">
-                        <option value="ux-designer">UX Designer</option>
-                        <option value="content-designer">Content Designer</option>
-                        <option value="ux-researcher">UX Researcher</option>
-                        <option value="product-manager">Product Manager</option>
-                        <option value="android-engineer">Android Engineer</option>
-                        <option value="ios-engineer">iOS Engineer</option>
-                        <option value="web-engineer">Web Engineer</option>
-                    </select>
-                </div>
-                <div class="control-group">
                     <button id="btn-toggle-music" class="icon-btn" aria-pressed="false" aria-label="Background Music: Off">
                         <span aria-hidden="true">🎵</span>
                     </button>
@@ -1132,75 +1120,6 @@ window.AdventCalendar = (function () {
 };
 
         const content = { adventData, tasIndex };
-        const ROLE_CONFIG = [
-            { id: 'ux-designer', label: 'UX Designer' },
-            { id: 'content-designer', label: 'Content Designer' },
-            { id: 'ux-researcher', label: 'UX Researcher' },
-            { id: 'product-manager', label: 'Product Manager' },
-            { id: 'android-engineer', label: 'Android Engineer' },
-            { id: 'ios-engineer', label: 'iOS Engineer' },
-            { id: 'web-engineer', label: 'Web Engineer' }
-        ];
-
-        const ROLE_COPY = {
-            'ux-designer': {
-                heading: 'How to look at this as a UX Designer',
-                dt: 'For UX Designers',
-                howToLook: 'Plan flows so that the accessible behavior is part of the design, not a retrofit.',
-                applyHeading: 'Apply this in your UX work',
-                applyBody: 'Choose one surface in your current work where this tip applies. Update your wireframes or specs so the behavior and states are clear for partners.',
-                quizFollowup: 'Turn what you learned from this question into a checklist item on your UX spec template.'
-            },
-            'content-designer': {
-                heading: 'How to look at this as a Content Designer',
-                dt: 'For Content Designers',
-                howToLook: 'Think about how language, structure, and hierarchy guide guests with and without assistive tech.',
-                applyHeading: 'Apply this in your content work',
-                applyBody: 'Pick a screen or flow that uses this concept. Rewrite headings, labels, or helper text so the experience is clear, concise, and inclusive.',
-                quizFollowup: 'Capture one phrasing rule that you can reuse in other experiences.'
-            },
-            'ux-researcher': {
-                heading: 'How to look at this as a UX Researcher',
-                dt: 'For UX Researchers',
-                howToLook: 'Treat this tip as a lens for planning tasks, success criteria, and observation guides.',
-                applyHeading: 'Apply this in your research work',
-                applyBody: 'Add a task or probe to an upcoming study that exercises this principle, and note how guests with different abilities respond.',
-                quizFollowup: 'Add one accessibility focused observation to your standard research checklist.'
-            },
-            'product-manager': {
-                heading: 'How to look at this as a Product Manager',
-                dt: 'For Product Managers',
-                howToLook: 'Connect this tip to outcomes, acceptance criteria, and risk for guests who rely on assistive technology.',
-                applyHeading: 'Apply this in your product work',
-                applyBody: 'Identify a feature or epic where this tip is relevant. Add a clear acceptance criterion and align with your team on how you will validate it.',
-                quizFollowup: 'Capture a short definition you can reuse when you talk about this accessibility concept with partners.'
-            },
-            'android-engineer': {
-                heading: 'How to look at this as an Android Engineer',
-                dt: 'For Android Engineers',
-                howToLook: 'Think about how this principle maps to Android views, Compose semantics, focus, and TalkBack.',
-                applyHeading: 'Apply this in your Android work',
-                applyBody: 'Pick one screen in the Target app. Use layout bounds, focus navigation, and TalkBack to verify that this tip is implemented end to end.',
-                quizFollowup: 'Note which Android component or API you should reach for first when you apply this concept.'
-            },
-            'ios-engineer': {
-                heading: 'How to look at this as an iOS Engineer',
-                dt: 'For iOS Engineers',
-                howToLook: 'Map this tip to UIKit or SwiftUI components, traits, focus, and VoiceOver behavior.',
-                applyHeading: 'Apply this in your iOS work',
-                applyBody: 'Choose one flow. Run through it with VoiceOver, and adjust roles, labels, or order so it matches what this tip describes.',
-                quizFollowup: 'Write down which iOS trait or pattern you will use next time you implement this behavior.'
-            },
-            'web-engineer': {
-                heading: 'How to look at this as a Web Engineer',
-                dt: 'For Web Engineers',
-                howToLook: 'Consider how this tip shows up in HTML, ARIA, CSS, and interaction handling for keyboard and screen readers.',
-                applyHeading: 'Apply this in your web work',
-                applyBody: 'Open a page you own. Inspect the DOM and tab through the experience to confirm this tip is truly implemented, not only documented.',
-                quizFollowup: 'Translate the correct answer into a small code snippet or pattern you can reuse.'
-            }
-        };
-
 
 
 
@@ -1231,7 +1150,6 @@ window.AdventCalendar = (function () {
 
         const STATE = {
             openedDays: safeStorageGet('targetAdvent_openedDays') || [],
-            selectedRole: safeStorageGet('targetAdvent_role') || (ROLE_CONFIG[0] && ROLE_CONFIG[0].id) || 'ux-designer',
             soundEnabled: false,
             volume: 0.5,
             contrastMode: false,
@@ -1325,32 +1243,10 @@ window.AdventCalendar = (function () {
            ========================================= */
         // These will be populated after DOMContentLoaded
         let gridEl, dialogEl, btnCloseModal, btnToggleSound, btnToggleMusic, btnToggleContrast;
-        let volumeSlider, iosVolumeHelperEl, quizForm, feedbackEl, progressCountEl, historyListEl, dateStatusEl, roleSelectEl;
+        let volumeSlider, iosVolumeHelperEl, quizForm, feedbackEl, progressCountEl, historyListEl, dateStatusEl;
 
         let lastFocusedBtn = null;
         let currentQuizItem = null;
-
-        function getRoleConfigById(roleId) {
-            if (!ROLE_CONFIG || !Array.isArray(ROLE_CONFIG)) return null;
-            return ROLE_CONFIG.find(r => r.id === roleId) || null;
-        }
-
-        function getSelectedRoleConfig() {
-            const roleId = STATE && STATE.selectedRole;
-            return getRoleConfigById(roleId) || ROLE_CONFIG[0] || null;
-        }
-
-        function getRoleLabel(roleId) {
-            const cfg = getRoleConfigById(roleId);
-            return cfg && cfg.label ? cfg.label : '';
-        }
-
-        function getRoleCopyForSelectedRole() {
-            const cfg = getSelectedRoleConfig();
-            const roleId = cfg && cfg.id ? cfg.id : 'ux-designer';
-            const copy = ROLE_COPY[roleId] || ROLE_COPY['ux-designer'];
-            return copy;
-        }
 
         function init() {
             try {
@@ -1368,7 +1264,6 @@ window.AdventCalendar = (function () {
                 progressCountEl = document.getElementById('progress-count');
                 historyListEl = document.getElementById('history-list');
                 dateStatusEl = document.getElementById('date-status');
-                roleSelectEl = document.getElementById('role-select');
 
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('mode') === 'training') {
@@ -1378,24 +1273,6 @@ window.AdventCalendar = (function () {
 
                 renderGrid();
                 updateHistoryUI();
-                const selectedRoleCfg = getSelectedRoleConfig();
-                if (roleSelectEl && selectedRoleCfg) {
-                    roleSelectEl.value = selectedRoleCfg.id;
-                }
-                if (roleSelectEl) {
-                    roleSelectEl.addEventListener('change', (e) => {
-                        const newRole = e.target.value;
-                        const cfg = getRoleConfigById(newRole);
-                        if (!cfg) return;
-                        STATE.selectedRole = newRole;
-                        safeStorageSet('targetAdvent_role', newRole);
-                        if (dateStatusEl) {
-                            const label = cfg.label || 'your role';
-                            dateStatusEl.textContent = `Role set to ${label}. Tips and quizzes are now tuned for this role.`;
-                        }
-                    });
-                }
-
 
                 if (btnToggleSound) {
                     btnToggleSound.addEventListener('click', () => {
@@ -1664,36 +1541,47 @@ function openDoor(item, btnElement) {
             if (contentEl) {
                 contentEl.innerHTML = `<p>${item.content}</p>`;
 
-                // Role based lenses tailored to the selected role
-                const roleCopy = getRoleCopyForSelectedRole();
+                // Role based lenses for UX and engineering partners
                 const roleBlock = document.createElement('section');
                 roleBlock.className = 'role-lenses';
                 roleBlock.setAttribute('aria-label', 'Role perspectives');
                 roleBlock.innerHTML = `
-                    <h3>${roleCopy.heading}</h3>
+                    <h3>How to look at this</h3>
                     <dl>
-                        <dt>${roleCopy.dt}</dt>
-                        <dd>${roleCopy.howToLook}</dd>
+                        <dt>For UX and content designers</dt>
+                        <dd>Consider how this tip shows up in flows, patterns, and copy for your current work. Look for one place in your designs where this applies and note how you would update the pattern.</dd>
+                        <dt>For engineers and QA</dt>
+                        <dd>Identify a component or template in your codebase that touches this tip. Check how it behaves with keyboard and screen readers, and capture at least one concrete improvement.</dd>
                     </dl>
                 `;
+                
                 const roleGuidance = item.roleGuidance;
                 if (roleGuidance) {
                     const headingEl = roleBlock.querySelector('h3');
                     if (roleGuidance.heading && headingEl) headingEl.textContent = roleGuidance.heading;
-                }
-                contentEl.appendChild(roleBlock);
 
-                // Apply it this week, tuned to the selected role
+                    const dts = roleBlock.querySelectorAll('dt');
+                    const dds = roleBlock.querySelectorAll('dd');
+
+                    if (roleGuidance.uxLabel && dts[0]) dts[0].textContent = roleGuidance.uxLabel;
+                    if (roleGuidance.uxText && dds[0]) dds[0].textContent = roleGuidance.uxText;
+                    if (roleGuidance.engLabel && dts[1]) dts[1].textContent = roleGuidance.engLabel;
+                    if (roleGuidance.engText && dds[1]) dds[1].textContent = roleGuidance.engText;
+                }
+
+contentEl.appendChild(roleBlock);
+
+                // Apply it this week
                 const applyBlock = document.createElement('section');
                 applyBlock.className = 'apply-this';
                 applyBlock.setAttribute('aria-label', 'Apply this tip');
                 applyBlock.innerHTML = `
-                    <h3>${roleCopy.applyHeading}</h3>
-                    <p>${roleCopy.applyBody}</p>
+                    <h3>Apply this in your work</h3>
+                    <p>Pick one surface related to this context (${item.context}) and check it against this tip. Capture a follow up task or acceptance criteria in your backlog if you find a gap.</p>
                 `;
                 contentEl.appendChild(applyBlock);
 
-// Optional deeper learning for advanced partners
+                // Optional deeper learning for advanced partners
                 const advancedBlock = document.createElement('section');
                 advancedBlock.className = 'advanced-learning';
                 advancedBlock.innerHTML = `
@@ -1721,9 +1609,7 @@ function openDoor(item, btnElement) {
                     tasContainer.appendChild(heading);
 
                     const desc = document.createElement('p');
-                    const tasRoleCfg = getSelectedRoleConfig();
-                    const tasRolePart = tasRoleCfg && tasRoleCfg.label ? ` for your role as a ${tasRoleCfg.label}` : '';
-                    desc.textContent = `These standards explain how this tip maps to Target wide accessibility requirements${tasRolePart}.`;
+                    desc.textContent = 'These standards explain how this tip maps to Target wide accessibility requirements.';
                     tasContainer.appendChild(desc);
 
                     const list = document.createElement('ul');
@@ -1788,15 +1674,7 @@ function openDoor(item, btnElement) {
             const val = parseInt(selected.value, 10);
             const isCorrect = val === currentQuizItem.quiz.correct;
             if (feedbackEl) {
-                const baseMessage = isCorrect ? currentQuizItem.quiz.explanation : "Not quite. Try again!";
-                let finalMessage = baseMessage;
-                if (isCorrect) {
-                    const roleCopy = getRoleCopyForSelectedRole();
-                    if (roleCopy && roleCopy.quizFollowup) {
-                        finalMessage = `${baseMessage} ${roleCopy.quizFollowup}`;
-                    }
-                }
-                feedbackEl.textContent = finalMessage;
+                feedbackEl.textContent = isCorrect ? currentQuizItem.quiz.explanation : "Not quite. Try again!";
                 feedbackEl.className = isCorrect ? "feedback-region feedback-success" : "feedback-region feedback-error";
             }
             if (isCorrect) {
@@ -1860,7 +1738,7 @@ function openDoor(item, btnElement) {
                     const item = adventData.find(d => d.day === dayNum);
                     if (item) {
                         const li = document.createElement('li');
-                        li.innerHTML = `<strong>Day ${dayNum}:</strong> ${item.title} - <button class="link-btn" onclick="AdventCalendar.reopenDay(${dayNum})">Review Day ${dayNum}</button>`;
+                        li.innerHTML = `<strong>Day ${dayNum}:</strong> ${item.title} - <button class="link-btn" onclick="reopenDay(${dayNum})">Review Day ${dayNum}</button>`;
                         list.appendChild(li);
                     }
                 });
