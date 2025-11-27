@@ -581,6 +581,8 @@
     </dialog>
 
     <script>
+window.AdventCalendar = (function () {
+
         /* =========================================
            1. DATA MODEL (31 Tips & Quizzes)
            ========================================= */
@@ -1116,6 +1118,9 @@
         { title: "Accessibility standards overview", url: "https://designsystems.prod.target.com/foundations/accessibility/accessibility-standards-overview" }
     ]
 };
+
+        const content = { adventData, tasIndex };
+
 
 
 
@@ -1741,7 +1746,7 @@ contentEl.appendChild(roleBlock);
             }
         }
 
-        window.reopenDay = (dayNum) => {
+        const reopenDay = (dayNum) => {
             const item = adventData.find(d => d.day === dayNum);
             if (item) {
                 currentQuizItem = item;
@@ -1752,7 +1757,12 @@ contentEl.appendChild(roleBlock);
             }
         };
 
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        
+    
+    return { init, openDoor, reopenDay, state: STATE, content };
+})();
+
+document.addEventListener('DOMContentLoaded', AdventCalendar.init);
+</script>
 </body>
 </html>
