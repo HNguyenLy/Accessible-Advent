@@ -1176,22 +1176,20 @@ window.AdventCalendar = (function () {
                 quizFollowup: 'Capture a short definition you can reuse when you talk about this accessibility concept with partners.'
             },
             'android-engineer': {
-                // Android engineers need actionable guidance grounded in our accessibility techniques.
-                heading: 'Android Engineering Perspective',
-                dt: 'Android Engineers',
-                howToLook: 'Use this tip to inform how you configure accessibility semantics in Jetpack Compose and classic Android Views. Think about content descriptions, semantic roles, focus order and TalkBack feedback.',
+                heading: 'How to look at this as an Android Engineer',
+                dt: 'For Android Engineers',
+                howToLook: 'Think about how this principle maps to Android views, Compose semantics, focus, and TalkBack.',
                 applyHeading: 'Apply this in your Android work',
-                applyBody: 'Choose a screen in the Target app. Enable layout bounds and TalkBack to inspect focus order. Use the Accessibility Scanner or Compose Semantics Debugger to verify that your components have descriptive labels, hints and roles.',
-                quizFollowup: 'Here is a Jetpack Compose example for an accessible Play button:\n\n@Composable\nfun PlayButton(onClick: () -> Unit) {\n    IconButton(\n        onClick = onClick,\n        modifier = Modifier\n            .semantics {\n                contentDescription = \"Play video\"\n                role = Role.Button\n            }\n    ) {\n        Icon(\n            imageVector = Icons.Default.PlayArrow,\n            contentDescription = null\n        )\n    }\n}\n\nThis pattern uses semantics to provide an accessibility label and role and leaves the inner icon without its own description. Test with TalkBack to ensure it announces \"Play video\" and describes your own actions.'
+                applyBody: 'Pick one screen in the Target app. Use layout bounds, focus navigation, and TalkBack to verify that this tip is implemented end to end.',
+                quizFollowup: 'Note which Android component or API you should reach for first when you apply this concept.'
             },
             'ios-engineer': {
-                // iOS engineers should tie each tip back to real code and VoiceOver best practices.
-                heading: 'iOS Engineering Perspective',
-                dt: 'iOS Engineers',
-                howToLook: 'Relate this tip to UIKit and SwiftUI accessibility traits, labels, hints and focus order. Consider how VoiceOver announces your controls and whether gestures match expectations.',
+                heading: 'How to look at this as an iOS Engineer',
+                dt: 'For iOS Engineers',
+                howToLook: 'Map this tip to UIKit or SwiftUI components, traits, focus, and VoiceOver behavior.',
                 applyHeading: 'Apply this in your iOS work',
-                applyBody: 'Select a flow on iOS. Turn on VoiceOver and run through each step. Add or adjust accessibilityLabel, accessibilityHint and accessibilityTraits so that every control is descriptive and the reading order matches the visual order.',
-                quizFollowup: 'Here is a UIKit example for an accessible Play button:\n\nlet playButton = UIButton(type: .system)\nplayButton.setImage(UIImage(systemName: \"play.fill\"), for: .normal)\nplayButton.accessibilityLabel = \"Play video\"\nplayButton.accessibilityHint = \"Double tap to start playing the video\"\nplayButton.accessibilityTraits.insert(.button)\n\nThis example sets a label, hint, and button trait so VoiceOver announces the control clearly and describes the action. Use similar techniques in SwiftUI with the .accessibilityLabel() and .accessibilityHint() modifiers.'
+                applyBody: 'Choose one flow. Run through it with VoiceOver, and adjust roles, labels, or order so it matches what this tip describes.',
+                quizFollowup: 'Write down which iOS trait or pattern you will use next time you implement this behavior.'
             },
             'web-engineer': {
                 heading: 'How to look at this as a Web Engineer',
@@ -1798,16 +1796,7 @@ function openDoor(item, btnElement) {
                         finalMessage = `${baseMessage} ${roleCopy.quizFollowup}`;
                     }
                 }
-                // If the message contains explicit newlines (from code samples) then
-                // replace them with <br> tags and assign via innerHTML. This
-                // preserves code formatting while keeping simple messages as plain
-                // text. Always clear the other property to avoid residual state.
-                if (isCorrect && /\n/.test(finalMessage)) {
-                    const html = finalMessage.replace(/\n/g, '<br>');
-                    feedbackEl.innerHTML = html;
-                } else {
-                    feedbackEl.textContent = finalMessage;
-                }
+                feedbackEl.textContent = finalMessage;
                 feedbackEl.className = isCorrect ? "feedback-region feedback-success" : "feedback-region feedback-error";
             }
             if (isCorrect) {
