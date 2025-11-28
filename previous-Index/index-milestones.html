@@ -2518,47 +2518,14 @@ function openDoor(item, btnElement) {
             if (!dateStatusEl) return;
 
             const openedCount = STATE.openedDays.length;
-
-            const selectedRoleCfg = (typeof getSelectedRoleConfig === 'function')
-                ? getSelectedRoleConfig()
-                : null;
-            const roleLabel = selectedRoleCfg && selectedRoleCfg.label ? selectedRoleCfg.label : '';
-            let rolePhrase = '';
-
-            if (roleLabel) {
-                const firstChar = roleLabel.trim().charAt(0).toLowerCase();
-                const useAn = ['a', 'e', 'i', 'o', 'u'].includes(firstChar);
-                const article = useAn ? 'an' : 'a';
-                rolePhrase = article + ' ' + roleLabel;
-            }
-
             let message = '';
 
-            if (openedCount === 1) {
-                message = 'You opened your first holiday tip. Thanks for kicking off the accessibility challenge.';
-                if (rolePhrase) {
-                    message += ' You are starting this journey as ' + rolePhrase + '.';
-                }
-            } else if (openedCount === 5) {
+            if (openedCount === 5) {
                 message = 'Nice work. You have opened five holiday tips. That is a strong start.';
-                if (rolePhrase) {
-                    message += ' You are building a strong foundation as ' + rolePhrase + '.';
-                }
             } else if (openedCount === 15) {
-                message = 'You have opened fifteen tips. You are right in the middle of the calendar and building a steady habit.';
-                if (rolePhrase) {
-                    message += ' Keep looking for small changes you can make as ' + rolePhrase + '.';
-                }
-            } else if (openedCount === 25) {
-                message = 'You have opened twenty five tips. You are in the home stretch. A few more and you will complete the calendar.';
-                if (rolePhrase) {
-                    message += ' This is a great time to share what you have learned as ' + rolePhrase + '.';
-                }
+                message = 'Halfway through the calendar. You are building powerful accessibility habits. Keep it up!';
             } else if (openedCount === 31) {
-                message = 'You completed all 31 days. Thank you for championing accessibility for our guests and team members.';
-                if (rolePhrase) {
-                    message += ' Consider sharing one favorite insight with your team as ' + rolePhrase + '.';
-                }
+                message = 'You completed all 31 days. Thank you for championing accessibility for our guests and team members!';
             }
 
             if (message) {
