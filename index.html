@@ -3623,7 +3623,7 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
             selectedRole: safeStorageGet('targetAdvent_role') || (ROLE_CONFIG[0] && ROLE_CONFIG[0].id) || 'ux-designer',
             soundEnabled: false,
             volume: 0.5,
-            contrastMode: false,
+            contrastMode: !!safeStorageGet('targetAdvent_contrast'),
             trainingMode: false,
             completionAnnounced: safeStorageGet('targetAdvent_completion') || false
 };
@@ -3802,16 +3802,27 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                     btnToggleMusic.addEventListener('click', toggleMusic);
                 }
                 
+                function applyContrastModeFromState() {
+                    if (!btnToggleContrast) return;
+                    if (STATE.contrastMode) {
+                        document.documentElement.setAttribute('data-theme', 'high-contrast');
+                        btnToggleContrast.setAttribute('aria-pressed', 'true');
+                        btnToggleContrast.setAttribute('aria-label', 'High Contrast Mode: On');
+                    } else {
+                        document.documentElement.removeAttribute('data-theme');
+                        btnToggleContrast.setAttribute('aria-pressed', 'false');
+                        btnToggleContrast.setAttribute('aria-label', 'High Contrast Mode: Off');
+                    }
+                }
+
                 if (btnToggleContrast) {
+                    // Initialize button state from stored preference
+                    applyContrastModeFromState();
+
                     btnToggleContrast.addEventListener('click', () => {
                         STATE.contrastMode = !STATE.contrastMode;
-                        if (STATE.contrastMode) {
-                            document.documentElement.setAttribute('data-theme', 'high-contrast');
-                            btnToggleContrast.setAttribute('aria-pressed', 'true');
-                        } else {
-                            document.documentElement.removeAttribute('data-theme');
-                            btnToggleContrast.setAttribute('aria-pressed', 'false');
-                        }
+                        safeStorageSet('targetAdvent_contrast', STATE.contrastMode);
+                        applyContrastModeFromState();
                     });
                 }
                 
@@ -3856,34 +3867,37 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
             const isAfterCalendar = today >= calendarEndExclusive;
             const currentDay = today.getDate();
 
-            if (gridEl) {
-                gridEl.innerHTML = '';
-                const totalDays = adventData.length;
-                const colCount = 7;
-                const bodyRowCount = Math.ceil(totalDays / colCount);
-                const headerRowCount = 1;
-                const rowCount = headerRowCount + bodyRowCount;
-                gridEl.setAttribute('aria-rowcount', String(rowCount));
-                gridEl.setAttribute('aria-colcount', String(colCount));
-
-                // Build a weekday header row so the grid more literally reflects the December 2025 calendar.
-                const headerRow = document.createElement('div');
-                headerRow.className = 'calendar-row calendar-header-row';
-                headerRow.setAttribute('role', 'row');
-
-                const weekdayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                weekdayLabels.forEach((label, index) => {
-                    const headerCell = document.createElement('div');
-                    headerCell.className = 'calendar-header-cell';
-                    headerCell.setAttribute('role', 'columnheader');
-                    headerCell.setAttribute('aria-colindex', String(index + 1));
-                    headerCell.setAttribute('aria-rowindex', '1');
-                    headerCell.textContent = label;
-                    headerRow.appendChild(headerCell);
-                });
-
-                gridEl.appendChild(headerRow);
+            if (!gridEl) {
+                return;
             }
+
+            // Clear existing content and set grid dimensions for assistive tech.
+            gridEl.innerHTML = '';
+            const totalDays = adventData.length;
+            const colCount = 7;
+            const bodyRowCount = Math.ceil(totalDays / colCount);
+            const headerRowCount = 1;
+            const rowCount = headerRowCount + bodyRowCount;
+            gridEl.setAttribute('aria-rowcount', String(rowCount));
+            gridEl.setAttribute('aria-colcount', String(colCount));
+
+            // Build a weekday header row so the grid more literally reflects the December 2025 calendar.
+            const weekdayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const headerRow = document.createElement('div');
+            headerRow.className = 'calendar-row calendar-header-row';
+            headerRow.setAttribute('role', 'row');
+
+            weekdayLabels.forEach((label, index) => {
+                const headerCell = document.createElement('div');
+                headerCell.className = 'calendar-header-cell';
+                headerCell.setAttribute('role', 'columnheader');
+                headerCell.setAttribute('aria-colindex', String(index + 1));
+                headerCell.setAttribute('aria-rowindex', '1');
+                headerCell.textContent = label;
+                headerRow.appendChild(headerCell);
+            });
+
+            gridEl.appendChild(headerRow);
 
             adventData.forEach((item, index) => {
                 if (!item) return;
@@ -3907,17 +3921,15 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                 }
 
                 // Create a new ARIA row wrapper every 7 days so assistive tech can treat this as a table-style grid.
-                if (index % 7 === 0) {
+                if (index % colCount === 0) {
                     const row = document.createElement('div');
                     row.className = 'calendar-row';
                     row.setAttribute('role', 'row');
-                    if (gridEl) {
-                        gridEl.appendChild(row);
-                    }
+                    gridEl.appendChild(row);
                 }
 
                 // The most recently added row will hold this day's cell.
-                const currentRow = gridEl && gridEl.lastElementChild;
+                const currentRow = gridEl.lastElementChild;
 
                 const dayWrapper = document.createElement('div');
                 dayWrapper.className = 'calendar-day';
@@ -3927,13 +3939,13 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                 const btn = document.createElement('button');
                 const isToday = isDuringCalendar && dayNum === currentDay;
 
-                // Base classes plus opened and today state
-                btn.className = `door-btn${isOpened ? ' opened' : ''}${isToday ? ' today' : ''}`;
+                // Base classes plus opened and today state.
+                btn.className = 'door-btn' + (isOpened ? ' opened' : '') + (isToday ? ' today' : '');
                 btn.setAttribute('role', 'gridcell');
 
                 // Provide explicit row/column indices so assistive tech can report position within the grid.
-                const colIndex = (index % 7) + 1;
-                const rowIndex = Math.floor(index / 7) + 2;
+                const colIndex = (index % colCount) + 1;
+                const rowIndex = Math.floor(index / colCount) + 2;
                 btn.setAttribute('aria-colindex', String(colIndex));
                 btn.setAttribute('aria-rowindex', String(rowIndex));
 
@@ -3948,7 +3960,7 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                 let stateLabel;
                 if (isLocked) {
                     if (!STATE.trainingMode && (isBeforeCalendar || (isDuringCalendar && dayNum > currentDay))) {
-                        stateLabel = `Locked until December ${dayNum}`;
+                        stateLabel = 'Locked until December ' + dayNum;
                     } else {
                         stateLabel = 'Locked';
                     }
@@ -3959,27 +3971,27 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                 }
 
                 if (isToday) {
-                    stateLabel = `Today, ${stateLabel}`;
+                    stateLabel = 'Today, ' + stateLabel;
                 }
 
-                btn.setAttribute('aria-label', `Day ${dayNum}, ${stateLabel}`);
+                btn.setAttribute('aria-label', 'Day ' + dayNum + ', ' + stateLabel);
                 btn.dataset.day = String(dayNum);
 
-                // Visual content
+                // Visual content.
                 btn.innerHTML = `
                     <div class="bullseye-art"></div>
                     <div class="bullseye-center"></div>
                     <span style="z-index:2">${dayNum}</span>
                 `;
 
-                // Click handler that respects locked state
+                // Click handler that respects locked state.
                 btn.addEventListener('click', () => {
                     const locked = btn.getAttribute('aria-disabled') === 'true';
                     if (locked) {
                         if (dateStatusEl) {
-                            dateStatusEl.textContent = `Day ${dayNum} is locked until December ${dayNum}.`;
+                            dateStatusEl.textContent = 'Day ' + dayNum + ' is locked until December ' + dayNum + '.';
                         } else {
-                            alert(`Day ${dayNum} is locked until December ${dayNum}.`);
+                            alert('Day ' + dayNum + ' is locked until December ' + dayNum + '.');
                         }
                         return;
                     }
@@ -3997,8 +4009,7 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
             updateCalendarStatus(today, { isBeforeCalendar, isDuringCalendar, isAfterCalendar });
         }
 
-
-        function updateCalendarStatus(today, phase) {
+function updateCalendarStatus(today, phase) {
             if (!dateStatusEl) return;
 
             // Training or facilitation mode keeps everything unlocked and called out explicitly.
@@ -4037,31 +4048,28 @@ function setupGridKeyboardNavigation() {
     const buttons = Array.from(gridEl.querySelectorAll('.door-btn'));
     if (!buttons.length) return;
 
-    // Derive a column count from the rendered grid.
-    // The calendar is a 7 column weekday layout, but this logic also
-    // guards against future CSS changes so keyboard navigation stays aligned.
+    // Derive a column count from the rendered grid so Arrow Up/Down move by row.
     let columns = 7;
     try {
         const styles = window.getComputedStyle(gridEl);
-        const colsString = styles.getPropertyValue('grid-template-columns').trim();
+        const colsString = styles.getPropertyValue('grid-template-columns');
         if (colsString) {
-            const minmaxMatches = colsString.match(/minmax\(/g);
-            if (minmaxMatches && minmaxMatches.length) {
-                columns = minmaxMatches.length;
-            } else {
-                columns = colsString.split(' ').filter(Boolean).length;
+            const parts = colsString.trim().split(/\s+/).filter(Boolean);
+            if (parts.length) {
+                columns = parts.length;
             }
         }
     } catch (e) {
-        // Fallback to 7 columns if computed style is not available
+        // Fallback to 7 columns if computed style is not available.
         columns = 7;
     }
 
     buttons.forEach((btn, index) => {
         btn.dataset.index = String(index);
 
-        btn.addEventListener('keydown', event => {
+        btn.addEventListener('keydown', (event) => {
             const key = event.key;
+
             if (
                 key !== 'ArrowRight' &&
                 key !== 'ArrowLeft' &&
@@ -4074,6 +4082,8 @@ function setupGridKeyboardNavigation() {
             }
 
             const currentIndex = parseInt(btn.dataset.index, 10);
+            if (Number.isNaN(currentIndex)) return;
+
             let targetIndex = currentIndex;
 
             if (key === 'ArrowRight') {
@@ -4097,7 +4107,6 @@ function setupGridKeyboardNavigation() {
         });
     });
 }
-
 
 function triggerDoorOpenAnimation(btnElement) {
             if (!btnElement) return;
