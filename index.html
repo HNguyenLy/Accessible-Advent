@@ -181,12 +181,29 @@
            ========================================= */
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(7, minmax(140px, 1fr));
             gap: 20px;
             list-style: none;
             padding: 0;
             margin: 0;
         }
+        .calendar-row {
+            display: contents;
+        }
+        .calendar-header-row {
+            display: contents;
+        }
+
+        .calendar-header-cell {
+            font-weight: 600;
+            text-align: center;
+            padding: 0.25rem 0 0.5rem;
+            color: var(--target-gray-900);
+            font-size: 0.95rem;
+        }
+
+
+
 
         .calendar-day {
             aspect-ratio: 1 / 1;
@@ -725,7 +742,7 @@ rem;
 
         @media (max-width: 600px) {
             .calendar-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                grid-template-columns: repeat(7, minmax(100px, 1fr));
             }
             h1 { font-size: 1.8rem; }
         }
@@ -848,9 +865,9 @@ rem;
             <!-- Calendar Grid -->
             <section aria-labelledby="calendar-heading">
                 <h2 id="calendar-heading" class="visually-hidden">Calendar</h2>
-                <ul id="calendar-grid" class="calendar-grid">
+                <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Accessibility advent calendar days">
                     <!-- Generated via JS -->
-                </ul>
+                </div>
             </section>
 
             <!-- History Section -->
@@ -3841,9 +3858,34 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
 
             if (gridEl) {
                 gridEl.innerHTML = '';
+                const totalDays = adventData.length;
+                const colCount = 7;
+                const bodyRowCount = Math.ceil(totalDays / colCount);
+                const headerRowCount = 1;
+                const rowCount = headerRowCount + bodyRowCount;
+                gridEl.setAttribute('aria-rowcount', String(rowCount));
+                gridEl.setAttribute('aria-colcount', String(colCount));
+
+                // Build a weekday header row so the grid more literally reflects the December 2025 calendar.
+                const headerRow = document.createElement('div');
+                headerRow.className = 'calendar-row calendar-header-row';
+                headerRow.setAttribute('role', 'row');
+
+                const weekdayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                weekdayLabels.forEach((label, index) => {
+                    const headerCell = document.createElement('div');
+                    headerCell.className = 'calendar-header-cell';
+                    headerCell.setAttribute('role', 'columnheader');
+                    headerCell.setAttribute('aria-colindex', String(index + 1));
+                    headerCell.setAttribute('aria-rowindex', '1');
+                    headerCell.textContent = label;
+                    headerRow.appendChild(headerCell);
+                });
+
+                gridEl.appendChild(headerRow);
             }
 
-            adventData.forEach(item => {
+            adventData.forEach((item, index) => {
                 if (!item) return;
 
                 const dayNum = item.day;
@@ -3864,14 +3906,36 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                     isLocked = false;
                 }
 
-                const li = document.createElement('li');
-                li.className = 'calendar-day';
+                // Create a new ARIA row wrapper every 7 days so assistive tech can treat this as a table-style grid.
+                if (index % 7 === 0) {
+                    const row = document.createElement('div');
+                    row.className = 'calendar-row';
+                    row.setAttribute('role', 'row');
+                    if (gridEl) {
+                        gridEl.appendChild(row);
+                    }
+                }
+
+                // The most recently added row will hold this day's cell.
+                const currentRow = gridEl && gridEl.lastElementChild;
+
+                const dayWrapper = document.createElement('div');
+                dayWrapper.className = 'calendar-day';
+                // Presentation role so the button carries the interactive semantics.
+                dayWrapper.setAttribute('role', 'presentation');
 
                 const btn = document.createElement('button');
                 const isToday = isDuringCalendar && dayNum === currentDay;
 
                 // Base classes plus opened and today state
                 btn.className = `door-btn${isOpened ? ' opened' : ''}${isToday ? ' today' : ''}`;
+                btn.setAttribute('role', 'gridcell');
+
+                // Provide explicit row/column indices so assistive tech can report position within the grid.
+                const colIndex = (index % 7) + 1;
+                const rowIndex = Math.floor(index / 7) + 2;
+                btn.setAttribute('aria-colindex', String(colIndex));
+                btn.setAttribute('aria-rowindex', String(rowIndex));
 
                 // Keep all doors focusable. Expose locked state via aria-disabled.
                 if (isLocked) {
@@ -3922,9 +3986,9 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                     openDoor(item, btn);
                 });
 
-                li.appendChild(btn);
-                if (gridEl) {
-                    gridEl.appendChild(li);
+                dayWrapper.appendChild(btn);
+                if (currentRow) {
+                    currentRow.appendChild(dayWrapper);
                 }
             });
 
@@ -3973,13 +4037,20 @@ function setupGridKeyboardNavigation() {
     const buttons = Array.from(gridEl.querySelectorAll('.door-btn'));
     if (!buttons.length) return;
 
-    // Derive a column count from the rendered grid
+    // Derive a column count from the rendered grid.
+    // The calendar is a 7 column weekday layout, but this logic also
+    // guards against future CSS changes so keyboard navigation stays aligned.
     let columns = 7;
     try {
         const styles = window.getComputedStyle(gridEl);
         const colsString = styles.getPropertyValue('grid-template-columns').trim();
         if (colsString) {
-            columns = colsString.split(' ').length;
+            const minmaxMatches = colsString.match(/minmax\(/g);
+            if (minmaxMatches && minmaxMatches.length) {
+                columns = minmaxMatches.length;
+            } else {
+                columns = colsString.split(' ').filter(Boolean).length;
+            }
         }
     } catch (e) {
         // Fallback to 7 columns if computed style is not available
