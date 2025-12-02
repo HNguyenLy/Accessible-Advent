@@ -3933,21 +3933,19 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
 
                 const dayWrapper = document.createElement('div');
                 dayWrapper.className = 'calendar-day';
-                // Presentation role so the button carries the interactive semantics.
-                dayWrapper.setAttribute('role', 'presentation');
+                // Gridcell wrapper so the button can remain a native button inside the grid.
+                dayWrapper.setAttribute('role', 'gridcell');
 
                 const btn = document.createElement('button');
                 const isToday = isDuringCalendar && dayNum === currentDay;
 
                 // Base classes plus opened and today state.
                 btn.className = 'door-btn' + (isOpened ? ' opened' : '') + (isToday ? ' today' : '');
-                btn.setAttribute('role', 'gridcell');
-
                 // Provide explicit row/column indices so assistive tech can report position within the grid.
                 const colIndex = (index % colCount) + 1;
                 const rowIndex = Math.floor(index / colCount) + 2;
-                btn.setAttribute('aria-colindex', String(colIndex));
-                btn.setAttribute('aria-rowindex', String(rowIndex));
+                dayWrapper.setAttribute('aria-colindex', String(colIndex));
+                dayWrapper.setAttribute('aria-rowindex', String(rowIndex));
 
                 // Keep all doors focusable. Expose locked state via aria-disabled.
                 if (isLocked) {
