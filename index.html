@@ -3947,12 +3947,9 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                 dayWrapper.setAttribute('aria-colindex', String(colIndex));
                 dayWrapper.setAttribute('aria-rowindex', String(rowIndex));
 
-                // Keep all doors focusable. Expose locked state via aria-disabled.
-                if (isLocked) {
-                    btn.setAttribute('aria-disabled', 'true');
-                } else {
-                    btn.removeAttribute('aria-disabled');
-                }
+                // Keep all doors focusable. Treat locked doors as informational, not disabled.
+                // Locked state is exposed only via the accessible label so buttons remain fully operable.
+                // The click handler below uses the isLocked flag in its closure to decide whether to open the dialog.
 
                 // Build accessible label, including today and state.
                 let stateLabel;
@@ -3982,10 +3979,9 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                     <span style="z-index:2">${dayNum}</span>
                 `;
 
-                // Click handler that respects locked state.
+                // Click handler that respects locked state while keeping buttons fully operable.
                 btn.addEventListener('click', () => {
-                    const locked = btn.getAttribute('aria-disabled') === 'true';
-                    if (locked) {
+                    if (isLocked) {
                         if (dateStatusEl) {
                             dateStatusEl.textContent = 'Day ' + dayNum + ' is locked until December ' + dayNum + '.';
                         } else {
