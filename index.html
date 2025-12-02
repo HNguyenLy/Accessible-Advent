@@ -3621,8 +3621,11 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
         const STATE = {
             openedDays: safeStorageGet('targetAdvent_openedDays') || [],
             selectedRole: safeStorageGet('targetAdvent_role') || (ROLE_CONFIG[0] && ROLE_CONFIG[0].id) || 'ux-designer',
-            soundEnabled: false,
+            // Audio preferences
+            soundEnabled: !!safeStorageGet('targetAdvent_sound'),
+            musicEnabled: !!safeStorageGet('targetAdvent_music'),
             volume: 0.5,
+            // Visual preferences
             contrastMode: !!safeStorageGet('targetAdvent_contrast'),
             trainingMode: false,
             completionAnnounced: safeStorageGet('targetAdvent_completion') || false
@@ -3687,20 +3690,29 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
 
                 if (bgAudio.paused) {
                     bgAudio.play().then(() => {
+                        STATE.musicEnabled = true;
+                        safeStorageSet('targetAdvent_music', STATE.musicEnabled);
                         updateMusicUI(true);
                     }).catch(e => {
                         console.error("Base64 music failed:", e);
+                        STATE.musicEnabled = false;
+                        safeStorageSet('targetAdvent_music', STATE.musicEnabled);
                         updateMusicUI(false);
                     });
                 } else {
                     bgAudio.pause();
+                    STATE.musicEnabled = false;
+                    safeStorageSet('targetAdvent_music', STATE.musicEnabled);
                     updateMusicUI(false);
                 }
             } else {
                 alert("No music data found! \n\nPlease search for 'MP3 to Base64', convert your file, and paste the text into the AUDIO_LIBRARY.bgMusic variable in the code.");
+                STATE.musicEnabled = false;
+                safeStorageSet('targetAdvent_music', STATE.musicEnabled);
                 updateMusicUI(false);
             }
         }
+
 
         function updateMusicUI(isPlaying) {
              if (btnToggleMusic) {
@@ -3791,10 +3803,8 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                 if (btnToggleSound) {
                     btnToggleSound.addEventListener('click', () => {
                         STATE.soundEnabled = !STATE.soundEnabled;
-                        btnToggleSound.setAttribute('aria-pressed', STATE.soundEnabled);
-                        btnToggleSound.setAttribute('aria-label', `Sound Effects: ${STATE.soundEnabled ? 'On' : 'Off'}`);
-                        const span = btnToggleSound.querySelector('span');
-                        if (span) span.textContent = STATE.soundEnabled ? '🔊' : '🔇';
+                        safeStorageSet('targetAdvent_sound', STATE.soundEnabled);
+                        applyAudioPreferencesFromState();
                     });
                 }
 
@@ -3815,6 +3825,33 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                     }
                 }
 
+                function applyAudioPreferencesFromState() {
+                    // Sync Sound Effects toggle from STATE
+                    if (btnToggleSound) {
+                        btnToggleSound.setAttribute('aria-pressed', STATE.soundEnabled ? 'true' : 'false');
+                        btnToggleSound.setAttribute(
+                            'aria-label',
+                            `Sound Effects: ${STATE.soundEnabled ? 'On' : 'Off'}`
+                        );
+                        const span = btnToggleSound.querySelector('span');
+                        if (span) span.textContent = STATE.soundEnabled ? '🔊' : '🔇';
+                    }
+
+                    // Sync Background Music toggle from STATE
+                    if (btnToggleMusic) {
+                        if (STATE.musicEnabled) {
+                            // Try to resume music based on stored preference
+                            if (!bgAudio || bgAudio.paused) {
+                                toggleMusic();
+                            }
+                        } else {
+                            // Ensure UI reflects music off
+                            updateMusicUI(false);
+                        }
+                    }
+                }
+
+
                 if (btnToggleContrast) {
                     // Initialize button state from stored preference
                     applyContrastModeFromState();
@@ -3825,6 +3862,9 @@ This pattern uses the Accessibility Testing Framework for Compose so issues like
                         applyContrastModeFromState();
                     });
                 }
+
+                // Initialize audio toggles from stored preferences
+                applyAudioPreferencesFromState();
                 
                 const ios = isIOSDevice();
                 
